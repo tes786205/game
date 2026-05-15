@@ -1,7 +1,7 @@
 import { Scene } from "phaser";
 import { mqttService, mqttTopic, mqttClientId } from "../mqttService";
 
-interface remotePlayers {
+interface RemotePlayer {
   id: string;
   sprite: Phaser.GameObjects.Sprite;
 }
@@ -40,10 +40,10 @@ export class Game extends Scene {
 
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 
-  remotePlayers: remotePlayers[] = [];
+  remotePlayers: RemotePlayer[] = [];
   gameOver!: boolean;
 
-  mqttTopic = mqttTopic + "/" + this.sys.settings.key;
+  mqttTopic!: string;
 
   constructor() {
     super("Game");
@@ -51,6 +51,7 @@ export class Game extends Scene {
 
   create() {
     this.gameOver = false;
+    this.mqttTopic = mqttTopic + "/" + this.sys.settings.key;
 
     // Music
     this.music = this.sound.add("music", { loop: true });
@@ -288,7 +289,7 @@ export class Game extends Scene {
       console.log(`${mqttClientId} subscribed to ` + this.mqttTopic);
     });
 
-    mqttService.on("message", (topic: string, message: Buffer) => {
+    const messageHandler = (topic: string, message: Buffer) => {
       const data = JSON.parse(message.toString());
 
       if (data.player.id === mqttClientId) return;
@@ -319,6 +320,14 @@ export class Game extends Scene {
         if (data.player.animation)
           remotePlayer.sprite.anims.play(data.player.animation, true);
       }
+    };
+
+    mqttService.on("message", messageHandler);
+
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      mqttService.off("message", messageHandler);
+      mqttService.unsubscribe(this.mqttTopic);
+      this.remotePlayers = [];
     });
   }
 
