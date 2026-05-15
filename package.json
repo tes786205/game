@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "phaser": "^4.0.0-rc.6"
+    "mqtt": "^5.15.1",
+    "phaser": "4.0.0"
   },
   "devDependencies": {
     "parcel": "^2.16.4",
