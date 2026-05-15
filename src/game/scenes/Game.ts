@@ -3,7 +3,7 @@ import { mqttService, mqttTopic, mqttClientId } from "../mqttService";
 
 interface remotePlayers {
   id: string;
-  sprite: Phaser.Physics.Arcade.Sprite;
+  sprite: Phaser.GameObjects.Sprite;
 }
 
 export class Game extends Scene {
