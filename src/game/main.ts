@@ -9,6 +9,10 @@ const config: Phaser.Types.Core.GameConfig = {
   type: AUTO,
   width: 1024,
   height: 768,
+  fps: {
+    target: 15,
+    forceSetTimeOut: true,
+  },
   parent: "game-container",
   physics: {
     default: "arcade",

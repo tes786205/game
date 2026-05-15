@@ -1,4 +1,10 @@
 import { Scene } from "phaser";
+import { mqttService, mqttTopic, mqttClientId } from "../mqttService";
+
+interface RemotePlayer {
+  id: string;
+  sprite: Phaser.GameObjects.Sprite;
+}
 
 export class Game extends Scene {
   music!: Phaser.Sound.BaseSound;
@@ -34,7 +40,10 @@ export class Game extends Scene {
 
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 
+  remotePlayers: RemotePlayer[] = [];
   gameOver!: boolean;
+
+  mqttTopic!: string;
 
   constructor() {
     super("Game");
@@ -42,6 +51,7 @@ export class Game extends Scene {
 
   create() {
     this.gameOver = false;
+    this.mqttTopic = mqttTopic + "/" + this.sys.settings.key;
 
     // Music
     this.music = this.sound.add("music", { loop: true });
@@ -274,6 +284,51 @@ export class Game extends Scene {
         this.scene.pause();
       });
     });
+
+    mqttService.subscribe(this.mqttTopic, () => {
+      console.log(`${mqttClientId} subscribed to ` + this.mqttTopic);
+    });
+
+    const messageHandler = (topic: string, message: Buffer) => {
+      const data = JSON.parse(message.toString());
+
+      if (data.player.id === mqttClientId) return;
+
+      const existsAt = this.remotePlayers.findIndex(
+        (rp) => rp.id === data.player.id,
+      );
+      if (existsAt === -1) {
+        const sprite: Phaser.GameObjects.Sprite = this.add
+          .sprite(
+            data.player.x,
+            data.player.y,
+            data.player.texture,
+            data.player.frame,
+          )
+          .setLighting(true);
+        sprite.flipX = data.player.flip.x;
+        sprite.flipY = data.player.flip.y;
+        if (data.player.animation)
+          sprite.anims.play(data.player.animation, true);
+        this.remotePlayers.push({ id: data.player.id, sprite });
+      } else {
+        const remotePlayer = this.remotePlayers[existsAt];
+        remotePlayer.sprite.setTexture(data.player.texture, data.player.frame);
+        remotePlayer.sprite.setPosition(data.player.x, data.player.y);
+        remotePlayer.sprite.flipX = data.player.flip.x;
+        remotePlayer.sprite.flipY = data.player.flip.y;
+        if (data.player.animation)
+          remotePlayer.sprite.anims.play(data.player.animation, true);
+      }
+    };
+
+    mqttService.on("message", messageHandler);
+
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      mqttService.off("message", messageHandler);
+      mqttService.unsubscribe(this.mqttTopic);
+      this.remotePlayers = [];
+    });
   }
 
   update() {
@@ -341,5 +396,25 @@ export class Game extends Scene {
         this.android.anims.play("android-standing-still", true);
       }
     }
+
+    mqttService.publish(
+      this.mqttTopic,
+      JSON.stringify({
+        player: {
+          id: mqttClientId,
+          x: this.player.x,
+          y: this.player.y,
+          texture: this.player.texture.key,
+          frame: this.player.frame.name,
+          flip: {
+            x: this.player.flipX,
+            y: this.player.flipY,
+          },
+          animation: this.player.anims.currentAnim
+            ? this.player.anims.currentAnim.key
+            : null,
+        },
+      }),
+    );
   }
 }
