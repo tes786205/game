@@ -2,7 +2,7 @@ import mqtt from "mqtt";
 
 const room =
   new URLSearchParams(window.location.search).get("room") ||
-  Math.random().toString().substring(2, 5);
+  Math.random().toString(16).substring(2, 10);
 export const mqttTopic = `tes20261/${room}`;
 export const mqttClientId = `player-${Math.random().toString(16).substring(2, 10)}`;
 
@@ -12,4 +12,12 @@ export const mqttService = mqtt.connect("wss://mqtt.feira-de-jogos.dev.br", {
 
 mqttService.on("connect", () => {
   console.log(`Connected to broker!`);
+});
+
+mqttService.on("error", (err) => {
+  console.error(`MQTT connection error: ${err.message}`);
+});
+
+mqttService.on("close", () => {
+  console.warn(`MQTT connection closed.`);
 });
