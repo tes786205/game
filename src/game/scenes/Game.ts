@@ -275,13 +275,15 @@ export class Game extends Scene {
     });
 
     this.physics.add.overlap(this.player, this.laser, () => {
+      if (this.gameOver) return;
       this.gameOver = true;
       this.music.stop();
 
       this.player.setVelocity(0, 0);
       this.player.anims.play("player-dying", true);
       this.player.once("animationcomplete", () => {
-        this.scene.pause();
+        this.scene.stop("Game");
+        this.scene.start("GameOver");
       });
     });
 

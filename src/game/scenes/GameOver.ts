@@ -1,33 +1,44 @@
 import { Scene } from "phaser";
+import axios from "axios";
 
 export class GameOver extends Scene {
-  camera: Phaser.Cameras.Scene2D.Camera;
-  background: Phaser.GameObjects.Image;
-  gameover_text: Phaser.GameObjects.Text;
-
   constructor() {
     super("GameOver");
   }
 
   create() {
-    this.camera = this.cameras.main;
-    this.camera.setBackgroundColor(0xff0000);
-
-    this.background = this.add.image(512, 384, "background");
-    this.background.setAlpha(0.5);
-
-    this.gameover_text = this.add.text(512, 384, "Game Over", {
-      fontFamily: "Arial Black",
-      fontSize: 64,
-      color: "#ffffff",
-      stroke: "#000000",
-      strokeThickness: 8,
-      align: "center",
+    google.accounts.id.initialize({
+      client_id:
+        "331191695151-ku8mdhd76pc2k36itas8lm722krn0u64.apps.googleusercontent.com",
+      callback: (res: any) => {
+        if (res.error) {
+          console.error(res.error);
+        } else {
+          axios
+            .post(
+              "https://feira-de-jogos.dev.br/api/v2/credit",
+              {
+                product: 1, // id do jogo cadastrado no banco de dados da Feira de Jogos
+                value: 100, // crédito em tijolinhos
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${res.credential}`,
+                },
+              },
+            )
+            .then(function (response: any) {
+              console.log(response);
+              alert("Crédito adicionado!");
+            })
+            .catch(function (error: any) {
+              console.error(error);
+              alert("Erro ao adicionar crédito :(");
+            });
+        }
+      },
     });
-    this.gameover_text.setOrigin(0.5);
 
-    this.input.once("pointerdown", () => {
-      this.scene.start("MainMenu");
-    });
+    google.accounts.id.prompt();
   }
 }
