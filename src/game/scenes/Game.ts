@@ -275,6 +275,7 @@ export class Game extends Scene {
     });
 
     this.physics.add.overlap(this.player, this.laser, () => {
+      if (this.gameOver) return;
       this.gameOver = true;
       this.music.stop();
 
