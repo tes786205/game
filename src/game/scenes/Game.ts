@@ -281,7 +281,8 @@ export class Game extends Scene {
       this.player.setVelocity(0, 0);
       this.player.anims.play("player-dying", true);
       this.player.once("animationcomplete", () => {
-        this.scene.pause();
+        this.scene.stop("Game");
+        this.scene.start("GameOver");
       });
     });
 

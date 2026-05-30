@@ -1,14 +1,17 @@
 {
   "dependencies": {
+    "axios": "^1.16.1",
     "mqtt": "^5.15.1",
     "phaser": "4.0.0"
   },
   "devDependencies": {
+    "@types/google.accounts": "^0.0.18",
     "parcel": "^2.16.4",
     "parcel-reporter-clean-dist": "^1.0.4",
     "parcel-reporter-static-files-copy": "^1.5.3",
     "process": "^0.11.10"
   },
+  "packageManager": "yarn@1.22.22",
   "scripts": {
     "clean": "rm -rf .parcel-cache dist",
     "build": "parcel build index.html --public-url ./ --no-source-maps --log-level error --config ./parcel/prod.json",
