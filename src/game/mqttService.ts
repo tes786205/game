@@ -2,7 +2,7 @@ import mqtt from "mqtt";
 
 const room =
   new URLSearchParams(window.location.search).get("room") ||
-  Math.random().toString(16).substring(2, 10);
+  Math.random().toString(16).substring(2, 5);
 export const mqttTopic = `tes20261/${room}`;
 export const mqttClientId = `player-${Math.random().toString(16).substring(2, 10)}`;
 
