@@ -37,6 +37,7 @@ export class Game extends Scene {
   android!: Phaser.Physics.Arcade.Sprite;
   laser!: Phaser.Physics.Arcade.Group;
   androidShooting!: boolean;
+  backlight!: Phaser.GameObjects.Light;
 
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 
@@ -44,6 +45,7 @@ export class Game extends Scene {
   gameOver!: boolean;
 
   mqttTopic!: string;
+  mqttTopicText!: Phaser.GameObjects.Text;
 
   constructor() {
     super("Game");
@@ -121,18 +123,14 @@ export class Game extends Scene {
     // Player
     // this.player = this.physics.add.sprite(100, 656, "character", 0);
     this.player = this.physics.add
-      .sprite(100, 300, "character", 0)
+      .sprite(100, 128, "character", 0)
       .setLighting(true);
 
     // Player backlight
-    const backlight = this.lights
+    this.backlight = this.lights
       .addLight(this.player.x, this.player.y, 100)
       .setColor(0xffffff)
       .setIntensity(1.5);
-
-    this.player.on("positionchange", () => {
-      backlight.setPosition(this.player.x, this.player.y);
-    });
 
     // Player animations
     this.anims.create({
@@ -286,6 +284,11 @@ export class Game extends Scene {
         this.scene.start("GameOver");
       });
     });
+    
+    this.mqttTopicText = this.add.text(10, 10, `Topic: ${this.mqttTopic}`, {
+      color: "#ffffff",
+      fontSize: "16px",
+    }).setScrollFactor(0);
 
     mqttService.subscribe(this.mqttTopic, () => {
       console.log(`${mqttClientId} subscribed to ` + this.mqttTopic);
@@ -337,6 +340,8 @@ export class Game extends Scene {
     if (this.gameOver) return;
 
     // Player movement
+    if (this.player) this.backlight.setPosition(this.player.x, this.player.y);
+
     if (this.cursors.left.isDown) {
       this.player.flipX = true;
       this.player.setVelocityX(-200);
@@ -350,7 +355,7 @@ export class Game extends Scene {
     } else this.player.setVelocityX(0);
 
     if (this.cursors.up.isDown && this.player.body.blocked.down) {
-      this.player.setVelocityY(-150);
+      this.player.setVelocityY(-250);
       this.player.anims.play("player-jumping", true);
     }
 
