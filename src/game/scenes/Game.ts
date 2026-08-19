@@ -285,7 +285,7 @@ export class Game extends Scene {
       });
     });
     
-    this.mqttTopicText = this.add.text(10, 10, `Topic: ${this.mqttTopic}`, {
+    this.mqttTopicText = this.add.text(10, 10, `Room: ${this.mqttTopic.split("/")[1]}`, {
       color: "#ffffff",
       fontSize: "16px",
     }).setScrollFactor(0);
