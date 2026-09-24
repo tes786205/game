@@ -18,8 +18,7 @@ export class MainMenu extends Scene {
       .setOrigin(0.5);
 
     this.input.once("pointerdown", () => {
-      this.scene.stop();
-      this.scene.start("Game");
+      this.scene.start("CharacterSelect");
     });
   }
 }

@@ -6,9 +6,11 @@
   "browserslist": "> 0.25%, last 2 versions, not dead",
   "scripts": {
     "dev": "node log.js dev & parcel index.html --no-cache --config ./parcel/.parcel.dev",
-    "build": "node log.js build & parcel build index.html --public-url _relativeroute_ --no-source-maps --log-level error --config ./parcel/.parcel.prod",
+    "build": "node log.js build & parcel build index.html --public-url _relativeroute_ --no-cache --no-source-maps --log-level error --config ./parcel/.parcel.prod",
     "dev-nolog": "parcel index.html --no-cache --config ./parcel/.parcel.dev",
-    "build-nolog": "parcel build index.html --public-url _relativeroute_ --no-source-maps --log-level error --config ./parcel/.parcel.prod"
+    "build-nolog": "parcel build index.html --public-url _relatineroute_ --no-cache --no-source-maps --log-level error --config ./parcel/.parcel.prod",
+    "verify:mqtt": "node scripts/verify-mqtt-session.mjs",
+    "verify:pairing": "node scripts/verify-pairing.mjs"
   },
   "repository": {
     "type": "git",
@@ -30,6 +32,7 @@
     "process": "^0.11.10"
   },
   "dependencies": {
+    "mqtt": "^5.16.0",
     "phaser": "^4.2.1"
   },
   "staticFiles": {
