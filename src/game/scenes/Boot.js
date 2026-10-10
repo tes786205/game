@@ -11,10 +11,10 @@ export class Boot extends Scene {
   }
 
   create() {
-    this.add.image(400, 225, "background");
+    this.add.image(this.game.config.width / 2, this.game.config.height / 2, "background");
 
     this.add
-      .text(400, 400, "Clique na tela para iniciar.", {
+      .text(this.game.config.width / 2, this.game.config.height / 2 + 120, "Clique na tela para iniciar.", {
         fontFamily: "Rubik Glitch",
         fontSize: 36,
         color: "#ffffff",
@@ -28,7 +28,6 @@ export class Boot extends Scene {
       } catch (error) {
         console.error("Failed to start fullscreen:", error);
       }
-      this.scene.stop();
       this.scene.start("Preloader");
     });
   }
