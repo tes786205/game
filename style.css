@@ -13,3 +13,8 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+#game-container {
+  position: fixed;
+  inset: 0;
+}

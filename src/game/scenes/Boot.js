@@ -23,6 +23,11 @@ export class Boot extends Scene {
       .setOrigin(0.5);
 
     this.input.once("pointerdown", () => {
+      try {
+        this.scale.startFullscreen();
+      } catch (error) {
+        console.error("Failed to start fullscreen:", error);
+      }
       this.scene.stop();
       this.scene.start("Preloader");
     });
